@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>柏树</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            display: none;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .result-item {
+            margin: 10px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>柏树</h1>
+        <div class="section">
+            <p>柏树是一种常绿针叶树，广泛分布于温带和亚热带地区。它们在固碳方面发挥着重要作用，可以有效地减少二氧化碳排放，帮助缓解全球变暖。</p>
+            <p>应用例子包括：园林绿化、城市绿化、生态恢复项目等。</p>
+        </div>
+        <div class="section">
+            <img src="" alt="柏树图片" id="treeImage">
+        </div>
+        <div class="section">
+            <label for="diameter">请输入柏树的胸径（cm）：</label>
+            <input type="number" id="diameter" min="0" placeholder="例如：30">
+            <button onclick="calculate()">计算</button>
+        </div>
+        <div id="result">
+            <div class="result-item" id="currentCarbon">当前含碳量：<span></span></div>
+            <div class="result-item" id="age">树龄：<span></span></div>
+            <div class="result-item" id="carbonStored">5年内固碳量：<span></span></div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const diameter = parseFloat(document.getElementById('diameter').value);
+            if (isNaN(diameter) || diameter <= 0) {
+                alert('请输入一个有效的胸径值（大于0）。');
+                return;
+            }
+            
+            const lnDiameter = Math.log(diameter);
+            const lnBase = lnDiameter / 12.93;
+            const age = Math.log(lnBase / -3.564) / -0.113;
+            
+            const expValue = 8.3208 * Math.exp(-4.4788 * Math.exp(-0.0665 * age));
+            const carbonCurrent = 0.5078 * Math.pow(3.0507 + 3.3947 * Math.pow(expValue, 2) * 
+                (3.6056 * Math.log(expValue) - 2.3325), 0.733);
+            
+            const expValue5YearsAgo = 8.3208 * Math.exp(-4.4788 * Math.exp(-0.0665 * (age - 5)));
+            const carbon5YearsAgo = 0.5078 * Math.pow(3.0507 + 3.3947 * Math.pow(expValue5YearsAgo, 2) * 
+                (3.6056 * Math.log(expValue5YearsAgo) - 2.3325), 0.733);
+            
+            const carbonStored = carbonCurrent - carbon5YearsAgo;
+
+            document.getElementById('currentCarbon').children[0].textContent = carbonCurrent.toFixed(2) + ' kg';
+            document.getElementById('age').children[0].textContent = age.toFixed(2) + ' 年';
+            document.getElementById('carbonStored').children[0].textContent = carbonStored.toFixed(2) + ' kg';
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
